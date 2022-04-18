@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="img/clapboard.png">
+    <link rel="stylesheet" href="CSS/common.css" media="screen">
+    <link rel="stylesheet" href="CSS/homeStyle.css" media="screen">
+    <script src="JS/movies.js"></script>
+    <title>CityU Cinema</title>
+    <script>
+        const PlayThumbnailMovie = (prop, moviesMap) => {
+            console.log(prop.children[1].children[0].textContent)
+            title = prop.children[1].children[0].textContent;
+            let temp = document.querySelector(".section-content").children;
+            let data = moviesMap.get(title);
+            temp[0].innerHTML = title;
+            temp[1].src = data.src;
+        }
+        window.onload = () => {
+            const movies = getMovies();
+            const moviesMap = new Map();
+            let counter = 0;
+            for (let i = 0; i < movies.length; i++) {
+                moviesMap.set(movies[i].name, movies[i]);
+            }
+            console.log("map" + moviesMap.size);
+            const showingMovieCards = document.querySelectorAll(".showing-list .movie-cards");
+            const upcomingMovieCards = document.querySelectorAll(".coming-list .movie-cards");
+            console.log(showingMovieCards)
+            console.log(showingMovieCards[0].children[1].children)
+            const showingMovies = [];
+            const upcomingMovies = [];
+            for (let i = 0; i < movies.length; i++) {
+                if (movies[i].type === "now") {
+                    showingMovies.push(movies[i])
+                } else if (movies[i].type === "upcoming") {
+                    upcomingMovies.push(movies[i])
+                }
+            }
+            movies.splice(0, movies.length);
+            movies.push(...showingMovies, ...upcomingMovies)
+            console.log(movies);
+            //set playing movies
+            document.querySelector(".video-clip").src = movies[counter % movies.length].src;
+            document.querySelector(".section-content .title").innerHTML= movies[counter % movies.length].name;
+            counter = (counter + 1) % movies.length;
+            ///
+            const showingMovieList = document.querySelector(".showing-list ul");
+            showingMovieList.innerHTML = " ";
+            for (let i = 0; i < showingMovies.length; i++) {
+                showingMovieList.innerHTML += "<li id=showingMovie_" + i + "></li>"
+                document.querySelector("#showingMovie_" + i).innerHTML = "<div class=" + "'" + "movie-cards" + "'" + "></div>";
+                document.querySelector("#showingMovie_" + i + " .movie-cards").innerHTML += "<img src=img/" + showingMovies[i].thumbnail + " alt=" + "'" + showingMovies[i].thumbnail + "'" + ">";
+                document.querySelector("#showingMovie_" + i + " .movie-cards").innerHTML += "<div class=" + "'" + "info" + "'" + "></div>"
+                document.querySelector("#showingMovie_" + i + " .movie-cards .info").innerHTML += "<p class=" + "'" + "title" + "'" + ">" + showingMovies[i].name + "</p>";
+                document.querySelector("#showingMovie_" + i + " .movie-cards .info").innerHTML += "<p>Cast: " + showingMovies[i].cast + " </p>"
+                document.querySelector("#showingMovie_" + i + " .movie-cards .info").innerHTML += "<p>Director: " + showingMovies[i].director + " </p>"
+                document.querySelector("#showingMovie_" + i + " .movie-cards .info").innerHTML += "<p>Duration: " + showingMovies[i].duration + "mins </p>"
+            }
+
+            const comingMovieList = document.querySelector(".coming-list ul");
+            comingMovieList.innerHTML = " ";
+            for (let i = 0; i < upcomingMovies.length; i++) {
+                comingMovieList.innerHTML += "<li id=comingMovie_" + i + "></li>"
+                document.querySelector("#comingMovie_" + i).innerHTML = "<div class=" + "'" + "movie-cards" + "'" + "></div>";
+                document.querySelector("#comingMovie_" + i + " .movie-cards").innerHTML += "<img src=img/" + upcomingMovies[i].thumbnail + " alt=" + "'" + upcomingMovies[i].thumbnail + "'" + ">";
+                document.querySelector("#comingMovie_" + i + " .movie-cards").innerHTML += "<div class=" + "'" + "info" + "'" + "></div>"
+                document.querySelector("#comingMovie_" + i + " .movie-cards .info").innerHTML += "<p class=" + "'" + "title" + "'" + ">" + upcomingMovies[i].name + "</p>";
+                document.querySelector("#comingMovie_" + i + " .movie-cards .info").innerHTML += "<p>Cast: " + upcomingMovies[i].cast + " </p>"
+                document.querySelector("#comingMovie_" + i + " .movie-cards .info").innerHTML += "<p>Director: " + upcomingMovies[i].director + " </p>"
+                document.querySelector("#comingMovie_" + i + " .movie-cards .info").innerHTML += "<p>Duration: " + upcomingMovies[i].duration + "mins </p>"
+            }
+
+
+            document.querySelectorAll(".movie-cards").forEach((item) => {
+                item.addEventListener('click', () => {
+                    PlayThumbnailMovie(item, moviesMap)
+                })
+            })
+
+            document.querySelector(".video-clip").addEventListener('ended', () => {
+                setTimeout(() => {
+                    let video = document.querySelector(".video-clip");
+                    video.src = movies[counter % movies.length].src;
+                    document.querySelector(".section-content .title").innerHTML= movies[counter % movies.length].name;
+                    //console.log(counter + " " + movies[counter % movies.length].name)
+                    counter = (counter + 1) % movies.length;
+                }, 2000)
+            })
+
+        }
+    </script>
+</head>
+
+<body>
+    <header>
+        <img class="company-icon" src="img/clapboard.png" alt="cinema icon">
+        <h1 class="company-name">CityU Cinema</h1>
+    </header>
+    <div class="menu">
+        <a class="home-page" href="homepage.html">HOME</a>
+        <a class="nowshowing-page" href="nowshowing.html">NOW SHOWING</a>
+        <a class="ticket-page" href="ticketpage.html">TICKET</a>
+    </div>
+    <!--body-->
+    <div class="container">
+        <!--Recommend movie-->
+        <div class="today-recommand-section">
+            <h2 class="section-name">Today Recommend</h2>
+            <!--the movie-->
+            <div class="section-content">
+                <h3 class="title">Wildlife</h3>
+                <video class="video-clip" controls autoplay muted>
+                    <source src="https://courses.cs.cityu.edu.hk/cs2204/video/wildlife.mp4" type="video/mp4">
+                    <source src="https://courses.cs.cityu.edu.hk/cs2204/video/wildlife.ogg" type="video/ogg">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+        <!--list of now showing and upcoming-->
+        <div class="list-section">
+            <!--Now showing movie list-->
+            <div class="showing-list">
+                <h3 class="list-title">Now showing movie</h3>
+                <ul>
+                    <li>
+                        <div class="movie-cards">
+                            <img src="img/spider-mannowayhome_lob_crd_03.jpg" alt="image of spider man no way home" />
+                            <div class="info">
+                                <p class="title">Spider-Man No Way Home</p>
+                                <p>Cast: Tom Holland, Zendaya, Jacob Batalon</p>
+                                <p>Director: Jon Watts</p>
+                                <p>Duration: 120mins</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="movie-cards">
+                            <img src="img/eternals_lob_crd_06.jpg" alt="image of enternals" />
+                            <div class="info">
+                                <p class="title">Eternals</p>
+                                <p>Cast: Angelina Jolie, Gemma Chan, Richard Madden, Kumail Nanjiani, Lauren Ridloff,
+                                    Brian
+                                    Tyree Henry, Salma Hayek, Lia McHugh, Don Lee and Kit Harrington</p>
+                                <p>Director: Chloé Zhao</p>
+                                <p>Duration: 120mins</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="movie-cards">
+                            <img src="img/John_Wick_Chapter_3_Poster.jpg" alt="image of John Wick 3">
+                            <div class="info">
+                                <p class="title">John Wick: Chapter 3 – Parabellum</p>
+                                <p>Cast: A</p>
+                                <p>Director: Keanu Reeves，Halle Berry，Laurence Fishburne</p>
+                                <p>Duration: 131mins</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <!--Upcoming movies list-->
+            <div class="coming-list">
+                <h3 class="list-title">Upcoming movies</h3>
+                <ul>
+                    <li>
+                        <div class="movie-cards">
+                            <img src="img/F9_film_poster.jpg" alt="poster of Fast and  Furious 9">
+                            <div class="info">
+                                <p class="title">Fast and Furious 9</p>
+                                <p>Cast: Justin Lin</p>
+                                <p>Director: Vin Diesel，Michelle Rodriguez，Tyrese Gibson， Chris "Ludacris" Bridges</p>
+                                <p>Duration: 143mins</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="movie-cards">
+                            <img src="img/The_Batman_2022_Poster.jpg" alt="poster of the batman">
+                            <div class="info">
+                                <p class="title">The Batman</p>
+                                <p>Cast: Matt Reeves</p>
+                                <p>Director: Robert Pattinson， Zoë Kravitz， Paul Dano， Jeffrey Wright， John Turturro，
+                                    Peter
+                                    Sarsgaard， Andy Serkis， Colin Farrell</p>
+                                <p>Duration: 176mins</p>
+                            </div>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="movie-cards">
+                            <img src="img/Bumblebee_(film)_poster.png" alt="poster of Bumblebee">
+                            <div class="info">
+                                <p class="title">Bumblebee</p>
+                                <p>Cast: Travis Knight</p>
+                                <p>Director: Hailee Steinfeld， John Cena， Jorge Lendeborg， Jr. John Ortiz， Jason
+                                    Drucker，
+                                    Pamela Adlon</p>
+                                <p>Duration: 120mins</p>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="footer-container">
+        <p>Copyright of resources belong to corresponding copyright owners</p>
+        <p>-fair use for education purpuse <a href="homepage.html">Home</a> <a href="designpage.html">Desgin</a></p>
+    </footer>
+
+</body>
+
+</html>
