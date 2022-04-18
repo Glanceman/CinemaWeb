@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="img/clapboard.png">
+    <link rel="stylesheet" href="CSS/common.css" media="screen">
+    <link rel="stylesheet" href="CSS/printStyle.css" media="screen">
+    <link rel="stylesheet" href="CSS/printStyle-print.css" media="print">
+    <title>CityU Cinema</title>
+
+    <script>
+
+        function printTickets(){
+            window.print();
+        }
+
+        function StringToArr(str) {
+            let temp = [];
+            let seat = "";
+            if (str != null) {
+                for (let i = 0; i < str.length; i++) {
+                    if (str[i] != " ") {
+                        seat = seat + str[i];
+                    } else {
+                        temp.push(seat);
+                        seat = "";
+                    }
+                }
+            }
+            return temp;
+        }
+
+        function Construct_Tickets(parent, cinema_name, movie_name, house, time, seats) {
+            for (let i = 0; i < seats.length; i++) {
+                parent.innerHTML += "<li" + " " + "id=" + "'" + "ticket_" + i + "'" + "></li>"
+                let li = document.querySelector("#ticket_" + i);
+                li.innerHTML = "<div class=" + "'" + "ticket" + "'" + "></div>";
+                let ticket = document.querySelector("#ticket_" + i + " .ticket");
+                ticket.innerHTML += "<h2>Ticket " + (i + 1) + "</h2>";
+                ticket.innerHTML += "<p>Cinema: " + cinema_name + "</p>";
+                ticket.innerHTML += "<p>Movie: " + movie_name + "</p>";
+                ticket.innerHTML += "<p>Time: " + time + "</p>";
+                ticket.innerHTML += "<p>House: House" + house + "</p>";
+                ticket.innerHTML += "<p>Seat: " + seats[i] + "</p>";
+            }
+        }
+        window.onload = () => {
+            document.querySelector(".ticket-list").innerHTML = "";
+            let parms = new URLSearchParams(window.location.search);
+            let seats = parms.get("seat");
+            console.log(seats);
+            let seatArr = StringToArr(seats);
+            console.log(seatArr.length);
+            Construct_Tickets(document.querySelector(".ticket-list"), parms.get("cinema_name"), parms.get("movie_name"), parms.get("house"), parms.get("movie_time"), seatArr);
+        }
+    </script>
+</head>
+
+<body>
+    <header>
+        <img class="company-icon" src="img/clapboard.png" alt="cinema icon">
+        <h1 class="company-name">CityU Cinema</h1>
+    </header>
+    <div class="menu">
+        <a class="home-page" href="homepage.html">HOME</a>
+        <a class="nowshowing-page" href="nowshowing.html">NOW SHOWING</a>
+        <a class="ticket-page" href="ticketpage.html">TICKET</a>
+    </div>
+
+    <div class="container">
+        <h1 class="section-title">Tickets</h1>
+        <ul class="ticket-list">
+            <li>
+                <div class="ticket">
+                    <h2>Ticket 1</h2>
+                    <p>Cinema: CityU Cinema-Festival Walk</p>
+                    <p>Movie: Spider-Man No Way Home</p>
+                    <p>Time: 19 March, Tue-9:00am</p>
+                    <p>House: House A</p>
+                    <p>Seat: C2</p>
+                </div>
+            </li>
+            <li>
+                <div class="ticket">
+                    <h2>Ticket 2</h2>
+                    <p>Cinema: CityU Cinema-Festival Walk</p>
+                    <p>Movie: Spider-Man No Way Home</p>
+                    <p>Time: 19 March, Tue-9:00am</p>
+                    <p>House: House A</p>
+                    <p>Seat: C3</p>
+                </div>
+            </li>
+        </ul>
+        <input type="button" class="btn" value="Print" onclick="printTickets()" >
+    </div>
+
+    <footer class="footer-container">
+        <p>Copyright of resources belong to corresponding copyright owners</p>
+        <p>-fair use for education purpuse <a href="homepage.html">Home</a> <a href="designpage.html">Desgin</a></p>
+    </footer>
+
+    <script>
+
+    </script>
+</body>
+
+</html>

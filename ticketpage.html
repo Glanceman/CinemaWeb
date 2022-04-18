@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="img/clapboard.png">
+    <link rel="stylesheet" href="CSS/common.css" media="screen">
+    <link rel="stylesheet" href="CSS/ticketStyle.css" media="screen">
+    <script src="https://courses.cs.cityu.edu.hk/cs2204/cw3/cinemas.js"></script>
+    <title>CityU Cinema</title>
+
+    <script>
+        function UpdateBookSeat(bookSeats){
+            document.querySelector(".seat").value="";
+            for(const [key,seat] of bookSeats.entries()){
+                console.log(seat);
+                document.querySelector(".seat").value+=seat+" ";
+            }
+        }
+
+        window.onload = () => {
+            const parms = new URLSearchParams(window.location.search);
+            if (parms == false) {
+                document.querySelector(".form").innerHTML = "<p>No ticket is detected</p>";
+                return null;
+            }
+            console.log(parms.has("cinema_name"));
+            document.querySelector(".seat").value="";
+            document.querySelector(".cinema_name").value = parms.get("cinema_name");
+            document.querySelector(".movie_name").value=parms.get("movie_name");
+            document.querySelector(".movie_time").value=parms.get("movie_time");
+            document.querySelector(".house").value=parms.get("House");
+            let seats=document.querySelectorAll(".cinema-seat");
+            let bookSeats=new Set();
+            seats.forEach(element => {
+                element.addEventListener("click",()=>{
+                    let seat=element.closest("tr").children[0].textContent+element.textContent;
+                    if(bookSeats.has(seat)==true){
+                        bookSeats.delete(seat);
+                    }else{
+                        bookSeats.add(seat);
+                    }
+                    console.log(seat);
+                    console.log(element.style.backgroundColor);
+                    let col=element.style.backgroundColor;
+                    if(col!="rgb(230, 107, 107)"){
+                        element.style.backgroundColor='rgb(230, 107, 107)';
+                    }else{
+                        element.style.backgroundColor='';
+                    }
+                   console.log(bookSeats);
+                   UpdateBookSeat(bookSeats);
+                })
+            });
+        }
+    </script>
+</head>
+
+<body>
+    <header>
+        <img class="company-icon" src="img/clapboard.png" alt="cinema icon">
+        <h1 class="company-name">CityU Cinema</h1>
+    </header>
+    <div class="menu">
+        <a class="home-page" href="homepage.html">HOME</a>
+        <a class="nowshowing-page" href="nowshowing.html">NOW SHOWING</a>
+        <a class="ticket-page" href="ticketpage.html">TICKET</a>
+    </div>
+
+    <div class="container">
+        <!--pre fill info-->
+        <form class="form" method="get" action="printpage.html">
+            <div class="ticket-section">
+                <h2>Ticket</h2>
+                <div class="ticket-info">
+                    <label>Cinema:</label>
+                    <input type="text" name="cinema_name" class="cinema_name" value="CityU Cinema-Festival Walk"
+                        readonly><br>
+                    <label>Movie:</label>
+                    <input type="text" name="movie_name" class="movie_name" value="Spider-Man No Way Home"
+                        readonly><br>
+                    <label>Time:</label>
+                    <input type="text" name="movie_time" class="movie_time" value="19 March, Tue-9:00am" readonly><br>
+                    <label>House:</label>
+                    <input type="text" name="house" class="house" value="House A" readonly><br>
+                </div>
+            </div>
+            <!--table selection-->
+
+            <table>
+                <thead>
+                    <tr>
+                        <th> </th>
+                        <th colspan="4" class="cinema-screen">Screen</th>
+                    </tr>
+                </thead>
+                <tr>
+                    <td class="cinema-seat-row">A</td>
+                    <td class="cinema-seat">1</td>
+                    <td class="cinema-seat">2</td>
+                    <td class="cinema-seat">3</td>
+                    <td class="cinema-seat">4</td>
+                </tr>
+                <tr>
+                    <td class="cinema-seat-row">B</td>
+                    <td class="cinema-seat">1</td>
+                    <td class="cinema-seat">2</td>
+                    <td class="cinema-seat">3</td>
+                    <td class="cinema-seat">4</td>
+                </tr>
+                <tr>
+                    <td class="cinema-seat-row">C</td>
+                    <td class="cinema-seat">1</td>
+                    <td class="cinema-seat">2</td>
+                    <td class="cinema-seat">3</td>
+                    <td class="cinema-seat">4</td>
+                </tr>
+            </table>
+
+            <!--seat booked-->
+            <div class="seat-booked">
+                <h3>Seat Booked</h3>
+                <div class="seat-booked-info">
+                    <input type="text" name="seat" class="seat" value="C2 C3" readonly>
+                    <input class="btn" type="submit" value="Comfirm">
+                </div>
+            </div>
+        </form>
+    </div>
+
+
+    <footer class="footer-container">
+        <p>Copyright of resources belong to corresponding copyright owners</p>
+        <p>-fair use for education purpuse <a href="homepage.html">Home</a> <a href="designpage.html">Desgin</a></p>
+    </footer>
+
+</body>
+
+</html>

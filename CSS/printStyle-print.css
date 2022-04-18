@@ -1,0 +1,15 @@
+header,.menu,.footer-container,.section-title{
+    display: none;
+}
+
+ul{
+    list-style: none;
+}
+
+li{
+    page-break-after: always;
+}
+
+.btn{
+    display: none;
+}

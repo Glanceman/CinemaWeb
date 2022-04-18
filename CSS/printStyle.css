@@ -1,0 +1,33 @@
+.container{
+    grid-template-columns: 1280px;
+}
+
+.ticket-list{
+    list-style: none;
+}
+
+.section-title{
+    font-size: 6ch;
+    margin: 5px 5px 5px;
+}
+.ticket{
+    background: white;
+    padding: 5px 30px 5px;
+    margin: 5px auto 5px;
+    border-radius: 20px;
+    font-size: 3ch;
+}
+
+.btn{
+    margin: 0 auto;
+    font-size: 3ch;
+    color:hsl(0, 61%, 16%);
+    padding: 2% 6%;
+    border-radius: 50px;
+    border: 0px;
+}
+.btn:hover{
+    cursor: pointer;
+    color: white;
+    background:hsl(360, 71%, 66%) ;
+}

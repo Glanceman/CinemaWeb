@@ -1,0 +1,104 @@
+.ticket-page {
+    pointer-events: none;
+    cursor: default;
+    color: hsl(360, 71%, 66%);
+    font-weight: bold;
+}
+
+.container{
+    grid-template-columns: 1280px;
+}
+
+input[type="text"]{
+    width: 90%;
+    border: 0px;
+    font-size:1.5rem;
+    color: hsl(0, 61%, 16%);
+    padding: 1%;
+    pointer-events:none;
+}
+
+
+.ticket-section>h2{
+    text-decoration: none;
+    margin: 5px 5px 5px;
+    font-size: 6ch;
+}
+.ticket-info{
+    background:white;
+    padding: 5px 30px 5px;
+    margin: 10px 10px 10px;
+    font-size: 3ch;
+    border-radius: 10px;
+}
+.ticket-info label{
+    width: 10%;
+    text-align:start;
+    display: inline-block;
+}
+
+.ticket-info input{
+    width: 50%;
+    font-size:1.5rem;
+    display: inline-block;
+}
+
+table{
+    margin: 10px auto 10px;
+}
+table th{
+    font-size: 4ch;
+}
+table td, table th{
+    text-align: center;
+    width: 100px;
+    height: 100px;
+}
+.cinema-screen,.cinema-seat-row{
+    background: wheat;
+}
+.cinema-seat-row{
+    font-size: 4ch;
+    font-weight: bold;
+    width: 200px;
+}
+.cinema-seat{
+    background-color: gainsboro;
+    font-size: 4ch;
+}
+
+.cinema-seat:hover{
+    background-color: hsl(360, 71%, 66%);
+    box-shadow: 0 4px 8px 1px rgba(255, 67, 67, 0.2), 0 6px 20px 1px rgba(255, 67, 67, 0.2);
+}
+
+.seat-booked h3{
+    margin: 5px 5px 5px;
+    font-size: 6ch;
+}
+.seat-booked-info{
+    margin: 10px 10px 10px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    font-size: 3ch;
+}
+
+.seat-booked-info:hover{
+    box-shadow: 0 4px 8px 1px rgba(255, 67, 67, 0.2), 0 6px 20px 1px rgba(255, 67, 67, 0.2);
+}
+.seat-booked-info .btn{
+    font-size: 2ch;
+    background-color:lightgrey;
+    margin: 0px auto 0px;
+    display: block;
+    padding: 1% 4%;
+    border-radius: 50px;
+    border: 0px;
+    color:hsl(0, 61%, 16%);
+    text-align: center;
+}
+.seat-booked-info .btn:hover{
+    color: white;
+    background:hsl(360, 71%, 66%) ;
+}

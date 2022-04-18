@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="img/clapboard.png">
+    <link rel="stylesheet" href="CSS/common.css" media="screen">
+    <link rel="stylesheet" href="CSS/nowshowingStyle.css" media="screen">
+    <!--<script src="JS/cinemas.js"></script>-->
+    <script src="https://courses.cs.cityu.edu.hk/cs2204/cw3/cinemas.js"></script>
+    <script src="JS/movies.js"></script>
+    <title>CityU Cinema</title>
+
+    <script>
+        function setAttribute(elem, obj) {
+            for (let prop in obj) {
+                elem.setAttribute(prop, obj[prop]);
+            }
+        }
+        function Construct_ForDisplay_InputField(parent, label_text, nameAttr, movie_name, movie_id) {
+            let input = document.createElement("div");
+            input.setAttribute("class", "input");
+            let label = document.createElement("label");
+            label.setAttribute("for", nameAttr + "_" + movie_id);
+            label.appendChild(document.createTextNode(label_text));
+            let textBox = document.createElement("input");
+            setAttribute(textBox, { type: "text", name: nameAttr, id: nameAttr + "_" + movie_id, value: movie_name, readonly: "readonly" });
+            input.appendChild(label);
+            input.appendChild(textBox);
+            parent.appendChild(input);
+        }
+        function Construct_SelectField(parent, label_text, nameAttr, movie_id, options, isKey = true, bShowLabel = false) {
+            let input = document.createElement("div");
+            input.setAttribute("class", "input");
+            let label = document.createElement("label");
+            label.setAttribute("for", nameAttr + "_" + movie_id);
+            label.appendChild(document.createTextNode(label_text));
+            let select = document.createElement("select")
+            setAttribute(select, { class: nameAttr, name: nameAttr, id: nameAttr + "_" + movie_id });
+            for (let [key, val] of options.entries()) {
+                let contentText = key;
+                if (isKey != true) {
+                    contentText = val;
+                }
+                let option = document.createElement("option");
+                let text
+                if (bShowLabel) {
+                    text = document.createTextNode("House: " + contentText);
+                } else {
+                    text = document.createTextNode(contentText);
+                }
+                option.appendChild(text);
+                option.setAttribute("value", contentText);
+                select.appendChild(option);
+            }
+            input.appendChild(label);
+            input.appendChild(select);
+            parent.appendChild(input);
+        }
+
+        function ConstructMovieForms(cinemaMap, movies, selectedCinema) {
+            document.querySelector(".forms").innerHTML = "";
+            let ul = document.querySelector(".forms");
+            for (let [movieID, movie] of cinemaMap.get(selectedCinema).entries()) {
+                console.log(movie)
+                let li = document.createElement("li");
+                let form = document.createElement("form");
+                setAttribute(form, { class: "form", method: "get", action: "ticketpage.html" });
+                let img = document.createElement("img")
+                setAttribute(img, { src: "img/" + movies[movieID - 1].thumbnail, alt: movies[movieID - 1].thumbnail })
+                let form_inputs = document.createElement("div");
+                form_inputs.setAttribute("class", "form-inputs")
+                form.appendChild(form_inputs);
+                form.appendChild(img);
+                li.appendChild(form);
+                ul.appendChild(li);
+                //hidden
+                let hidden = document.createElement("input");
+                setAttribute(hidden, { type: "hidden", name: "cinema_name", value: selectedCinema });
+                form_inputs.appendChild(hidden);
+                // name
+                Construct_ForDisplay_InputField(form_inputs, "Name:", "movie_name", movies[movieID - 1].name, movieID);
+                //
+                // house
+                Construct_SelectField(form_inputs, "House:", "House", movieID, movie, true, true);
+                //
+                //date
+                console.log(document.querySelector("#House_" + movieID).value)
+                let temp = parseInt(document.querySelector("#House_" + movieID).value);
+                Construct_SelectField(form_inputs, "Time:", "movie_time", movieID, movie.get(temp), false);
+
+
+                //
+                let submit_btn = document.createElement("input");
+                setAttribute(submit_btn, { class: "btn", type: "submit", value: "Buy Ticket" })
+                form.appendChild(submit_btn);
+            }
+        }
+
+        function Update_Date_By_House(parent, cinemaMap, selectedCinema, movieID, houseNum) {
+            parent.innerHTML = "";
+            //console.log("ID: " + houseNum);
+            //console.log(cinemaMap.get(selectedCinema).get(movieID).get(houseNum));
+            for (let [key, val] of cinemaMap.get(selectedCinema).get(movieID).get(houseNum).entries()) {
+                let contentText = val;
+                let option = document.createElement("option");
+                let text = document.createTextNode(contentText);
+                option.appendChild(text);
+                option.setAttribute("value", contentText);
+                parent.appendChild(option);
+            }
+        }
+
+        window.onload = () => {
+            const cinemas = getCinemas();
+            const movies = getMovies();
+            let cinema = document.querySelector("#cinema");
+            //remove original cinemas
+            Array.from(cinema).forEach(item => {
+                cinema.removeChild(item);
+            })
+            //insert cinema
+            for (let i = 0; i < cinemas.length; i++) {
+                let option = document.createElement("option");
+                option.setAttribute("value", cinemas[i].branchName)
+                option.setAttribute("id", i)
+                let optionText = document.createTextNode(cinemas[i].branchName)
+                option.appendChild(optionText);
+                cinema.appendChild(option);
+            }
+            // reconstruct data of cinema using 
+            let cinemaMap = new Map();
+            for (let i = 0; i < cinemas.length; i++) {
+                let cinema = cinemas[i];
+                let movieMap = new Map()
+                for (let j = 0; j < cinema.movies.length; j++) {
+                    movie = cinema.movies[j];
+                    let showsMap = new Map();
+                    for (let k = 0; k < movie.shows.length; k++) {
+                        show = movie.shows[k]
+                        if (showsMap.get(show.house) == undefined) {
+                            showsMap.set(show.house, [show.datetime])
+                        } else {
+                            let arr = []
+                            arr.push(...showsMap.get(show.house), show.datetime)
+                            showsMap.set(show.house, arr);
+                        }
+                    }
+                    movieMap.set(movie.id, showsMap);
+                }
+                cinemaMap.set(cinema.branchName, movieMap);
+            }
+
+            console.log(cinemaMap);
+            ConstructMovieForms(cinemaMap, movies, document.querySelector("#cinema").value);
+
+            document.querySelector("#cinema").addEventListener("change", () => {
+                console.log("change")
+                ConstructMovieForms(cinemaMap, movies, document.querySelector("#cinema").value);
+                document.querySelectorAll(".House").forEach(ele => {
+                    ele.addEventListener("change", () => {
+                        let time = document.querySelector("#movie_time" + "_" + ele.id[ele.id.length - 1]);
+                        let movieID = parseInt(ele.id[ele.id.length - 1]);
+                        let selectedCinema = document.querySelector("#cinema").value
+                        let houseNum = parseInt(document.querySelector("#House" + "_" + ele.id[ele.id.length - 1]).value);
+                        Update_Date_By_House(time, cinemaMap, selectedCinema, movieID, houseNum);
+                    })
+                })
+
+            })
+
+            document.querySelectorAll(".House").forEach(ele => {
+                ele.addEventListener("change", () => {
+                    let time = document.querySelector("#movie_time" + "_" + ele.id[ele.id.length - 1]);
+                    let movieID = parseInt(ele.id[ele.id.length - 1]);
+                    let selectedCinema = document.querySelector("#cinema").value
+                    let houseNum = parseInt(document.querySelector("#House" + "_" + ele.id[ele.id.length - 1]).value);
+                    Update_Date_By_House(time, cinemaMap, selectedCinema, movieID, houseNum);
+                })
+            })
+        }
+    </script>
+</head>
+
+<body>
+    <header>
+        <img class="company-icon" src="img/clapboard.png" alt="cinema icon">
+        <h1 class="company-name">CityU Cinema</h1>
+    </header>
+    <div class="menu">
+        <a class="home-page" href="homepage.html">HOME</a>
+        <a class="nowshowing-page" href="nowshowing.html">NOW SHOWING</a>
+        <a class="ticket-page" href="ticketpage.html">TICKET</a>
+    </div>
+
+    <div class="container">
+        <!--movie_selection-->
+        <div class="selection-section">
+            <h2 class="selection-title">Now Showing Movies</h2>
+            <div class="cinema-selection">
+                <label for="cinema">Cinema</label>
+                <select name="cinema" id="cinema">
+                    <option value="festival walk">CityU Cinema-Festival Walk</option>
+                    <option value="MongKok">CityU Cinema-MongKok</option>
+                    <option value="TaiKoo">CityU Cinema-TaiKoo</option>
+                </select>
+            </div>
+            <!--movie 1-->
+            <ul class="forms">
+                <li>
+                    <form class="form" method="get" action="ticketpage.html">
+                        <img src="img/spider-mannowayhome_lob_crd_03.jpg" alt="image of spider man no way home" />
+                        <div class="form-inputs">
+                            <div class="input">
+                                <label for="movie_name_1">Name: </label>
+                                <input type="text" id="movie_name_1" name="movie_name_1" value="Spider-Man No Way Home"
+                                    disabled />
+                            </div>
+                            <div class="input">
+                                <label for="house_1">House:</label>
+                                <select id="house_1" name="house_1">
+                                    <option value="House A">House A</option>
+                                </select>
+                            </div>
+                            <div class="input">
+                                <label for="movie_time_1">Time: </label>
+                                <select name="movie_time_1" id="movie_time_1">
+                                    <option value="19 March, Tue-9:00am">19 March, Tue-9:00am</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input class="btn" type="submit" value="Buy Ticket" />
+                    </form>
+                </li>
+                <li>
+                    <form class="form" method="get" action="ticketpage.html">
+                        <img src="img/eternals_lob_crd_06.jpg" alt="image of enternals" />
+                        <div class="form-inputs">
+                            <div class="input">
+                                <label for="movie_name_2">Name: </label>
+                                <input type="text" name="movie_name_2" id="movie_name_2" value="Eternals" disabled />
+                            </div>
+                            <div class="input">
+                                <label for="house_2">House:</label>
+                                <select name="house_2" id="house_2">
+                                    <option value="House B">House B</option>
+                                </select>
+                            </div>
+                            <div class="input">
+                                <label for="movie_time_2">Time: </label>
+                                <select name="movie_time_2" id="movie_time_2">
+                                    <option value="19 March, Tue-10:00am">19 March, Tue-10:00am</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input class="btn" type="submit" value="Buy Ticket" />
+                    </form>
+                </li>
+                <li>
+                    <form class="form" method="get" action="ticketpage.html">
+                        <img src="img/John_Wick_Chapter_3_Poster.jpg" alt="image of John Wick 3">
+                        <div class="form-inputs">
+                            <div class="input">
+                                <label for="movie_name_3">Name: </label>
+                                <input type="text" name="movie_name_3" id="movie_name_3" value="John Wick 3" disabled />
+                            </div>
+                            <div class="input">
+                                <label for="house_3">House:</label>
+                                <select name="house_3" id="house_3">
+                                    <option value="House C">House C</option>
+                                </select>
+                            </div>
+                            <div class="input">
+                                <label for="movie_time_3">Time: </label>
+                                <select name="movie_time_3" id="movie_time_3">
+                                    <option value="19 March, Tue-10:30am">19 March, Tue-10:30am</option>
+                                </select>
+                            </div>
+                        </div>
+                        <input class="btn" type="submit" value="Buy Ticket" />
+                    </form>
+                </li>
+            </ul>
+        </div>
+        <!--show cinema_location-->
+        <div class="locations">
+            <h2>Location</h2>
+            <div class="location">
+                <img src="img/festival_walk_loc.jpg" alt="image of Festival Walk cinema location">
+                <p>Level UG, Festival Walk, 80 Tat Chee Avenue, Kowloon Tong, Kowloon</p>
+            </div>
+            <div class="location">
+                <img src="img/mongkok_loc.jpg" alt="image of Mongkok cinema location">
+                <p> 6-12 Sai Yeung Choi Street, Mongkok, Kowloon</p>
+            </div>
+            <div class="location">
+                <img src="img/taikoo_loc.jpg" alt="image of taikoo cinema location">
+                <p> 5/F Cityplaza, 18 Taikoo Shing Road, Hong Kong</p>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer-container">
+        <p>Copyright of resources belong to corresponding copyright owners</p>
+        <p>-fair use for education purpuse <a href="homepage.html">Home</a> <a href="designpage.html">Desgin</a></p>
+    </footer>
+
+</body>
+
+</html>
